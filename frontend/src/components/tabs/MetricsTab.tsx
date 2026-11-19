@@ -15,9 +15,24 @@ export const MetricsTab = () => {
         if (res.ok) {
           const data = await res.json();
           setMetrics(data);
+          return;
         }
       } catch (err) {
-        console.error("Error fetching metrics:", err);
+        console.error("API metrics unavailable, trying static fallback:", err);
+      }
+      // Fallback: load static JSON files from /reports/ (bundled in public/)
+      try {
+        const [clfRes, yldRes] = await Promise.all([
+          fetch("/reports/classifier_metrics.json"),
+          fetch("/reports/yield_metrics.json"),
+        ]);
+        const clf = clfRes.ok ? await clfRes.json() : {};
+        const yld = yldRes.ok ? await yldRes.json() : {};
+        if (Object.keys(clf).length || Object.keys(yld).length) {
+          setMetrics({ classifier: clf, yield: yld });
+        }
+      } catch (e2) {
+        console.error("Static metrics fallback also failed:", e2);
       } finally {
         setLoading(false);
       }
@@ -208,7 +223,7 @@ export const MetricsTab = () => {
               {/* Museum frame with subtle vignette */}
               <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-black/90 ring-1 ring-white/10 flex items-center justify-center">
                 <img
-                  src={`${API_BASE_URL}/api/reports/image/${plot.filename}`}
+                  src={`/reports/${plot.filename}`}
                   alt={plot.title}
                   className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                 />
@@ -240,7 +255,7 @@ export const MetricsTab = () => {
             </div>
             <div className="w-full max-h-[75vh] overflow-auto flex items-center justify-center bg-black/60 rounded-2xl p-2 border border-white/5">
               <img
-                src={`${API_BASE_URL}/api/reports/image/${activeImageModal}`}
+                src={`/reports/${activeImageModal}`}
                 alt="Enlarged Plot"
                 className="max-h-[70vh] w-auto object-contain rounded-xl"
               />

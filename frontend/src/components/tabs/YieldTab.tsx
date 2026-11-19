@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "@/config/api";
+import defaultSchema from "@/config/schema.json";
 import { TrendingUp, CloudRain, Thermometer, FlaskConical, Globe, Sprout, BarChart2, ShieldCheck, RefreshCw, Clock, ChevronDown } from "lucide-react";
 
 interface YieldTabProps {
@@ -12,9 +13,13 @@ const UPCOMING_VISION_CROPS_NAMES = [
 ];
 
 export const YieldTab: React.FC<YieldTabProps> = ({ onYieldComplete }) => {
-  const [countries, setCountries] = useState<string[]>([]);
-  const [crops, setCrops] = useState<string[]>([]);
-  const [schemaLimits, setSchemaLimits] = useState<any>(null);
+  const [countries, setCountries] = useState<string[]>(defaultSchema.Area?.options || []);
+  const [crops, setCrops] = useState<string[]>(defaultSchema.Item?.options || []);
+  const [schemaLimits, setSchemaLimits] = useState<any>({
+    rain: defaultSchema.average_rain_fall_mm_per_year,
+    pest: defaultSchema.pesticides_tonnes,
+    temp: defaultSchema.avg_temp
+  });
 
   const [formData, setFormData] = useState({
     Area: "India",

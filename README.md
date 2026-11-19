@@ -40,29 +40,22 @@ BioVision operates on a decoupled multimodal architecture:
 
 ## 🚀 Quick Start (Local Development)
 
-### 1. Launch with One Click (Windows)
-Double-click `start_app.bat` or run:
-```powershell
-./start_app.ps1
-```
-This automatically starts:
-- **FastAPI Engine** on `http://127.0.0.1:8000`
-- **Next.js Web UI** on `http://localhost:3000`
-
-### 2. Manual Setup
-#### Backend
+### 1. Backend (FastAPI ML Microservice)
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Or on Windows: .venv\Scripts\activate
+# Install dependencies
 pip install -r backend/requirements.txt
+
+# Start the ML Engine (runs on http://127.0.0.1:8000)
 python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-#### Frontend
+### 2. Frontend (Next.js 15 UI)
 ```bash
+# In a second terminal:
 cd frontend
 npm install
 npm run dev
+# Web UI opens on http://localhost:3000
 ```
 
 ---

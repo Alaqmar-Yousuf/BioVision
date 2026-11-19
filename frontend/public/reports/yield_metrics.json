@@ -1,0 +1,11 @@
+{
+  "target": "hg/ha_yield",
+  "best_model": "RandomForestRegressor",
+  "n_rows": 31621,
+  "n_crops": 26,
+  "test_mae": 36003.11769681432,
+  "test_rmse": 90174.32806326108,
+  "test_r2": 0.9022110084910381,
+  "target_min": 849.0,
+  "target_max": 5239278.0
+}
