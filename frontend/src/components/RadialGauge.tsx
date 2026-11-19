@@ -10,8 +10,8 @@ interface CircularConfidenceGaugeProps {
 
 export const CircularConfidenceGauge: React.FC<CircularConfidenceGaugeProps> = ({
   percentage,
-  size = 94,
-  strokeWidth = 7,
+  size = 86,
+  strokeWidth = 6,
   label = "Confidence",
 }) => {
   const radius = (size - strokeWidth) / 2;
@@ -22,15 +22,15 @@ export const CircularConfidenceGauge: React.FC<CircularConfidenceGaugeProps> = (
     <div className="flex flex-col items-center justify-center select-none">
       <div className="relative" style={{ width: size, height: size }}>
         <svg className="w-full h-full -rotate-90" viewBox={`0 0 ${size} ${size}`}>
-          {/* Gradient definitions */}
+          {/* Gradient definition */}
           <defs>
-            <linearGradient id="emeraldGaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#10B981" />
-              <stop offset="60%" stopColor="#2DD4BF" />
-              <stop offset="100%" stopColor="#34D399" />
+            <linearGradient id="organicLimeGauge" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#C8E6C9" />
+              <stop offset="60%" stopColor="#B7F36B" />
+              <stop offset="100%" stopColor="#A3E635" />
             </linearGradient>
-            <filter id="gaugeGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#10B981" floodOpacity="0.6" />
+            <filter id="organicGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#B7F36B" floodOpacity="0.5" />
             </filter>
           </defs>
 
@@ -39,125 +39,80 @@ export const CircularConfidenceGauge: React.FC<CircularConfidenceGaugeProps> = (
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#121F18"
+            stroke="#0B1E17"
             strokeWidth={strokeWidth}
             fill="transparent"
           />
 
-          {/* Fine inner calibration ring */}
+          {/* Inner calibration ring */}
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius - strokeWidth - 2}
-            stroke="rgba(255, 255, 255, 0.05)"
+            stroke="rgba(200, 230, 201, 0.08)"
             strokeWidth={1}
             strokeDasharray="2 3"
             fill="transparent"
           />
 
-          {/* Foreground progress */}
+          {/* Foreground progress circle */}
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="url(#emeraldGaugeGradient)"
+            stroke="url(#organicLimeGauge)"
             strokeWidth={strokeWidth}
-            fill="transparent"
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             strokeLinecap="round"
+            fill="transparent"
+            filter="url(#organicGlow)"
             className="transition-all duration-1000 ease-out"
-            filter="url(#gaugeGlow)"
           />
         </svg>
 
-        {/* Center Text */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-base font-black font-mono text-white tracking-tighter tabular-nums">
+        {/* Center percentage value */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span className="text-base font-bold text-[#F3F5EC] font-mono tracking-tight leading-none">
             {percentage.toFixed(1)}%
           </span>
-          <span className="text-[8px] uppercase tracking-[0.2em] font-mono font-bold text-brand-muted -mt-0.5">
-            MATCH
+          <span className="text-[8px] font-mono uppercase tracking-widest text-[#829B87] mt-1">
+            {label}
           </span>
         </div>
       </div>
-      <span className="text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-brand-tertiary mt-2">
-        {label}
-      </span>
     </div>
   );
 };
 
 interface SeverityArcGaugeProps {
-  penaltyPct: number; // 0, 20, 50
+  penaltyPct: number; // 0.0 to 1.0
+  severityLabel: string;
 }
 
-export const SeverityArcGauge: React.FC<SeverityArcGaugeProps> = ({ penaltyPct }) => {
-  const size = 120;
-  const strokeWidth = 8;
-  const radius = (size - strokeWidth) / 2;
-  const arcLength = Math.PI * radius;
-  const normalized = Math.min(Math.max(penaltyPct, 0), 100);
-  const offset = arcLength - (normalized / 100) * arcLength;
+export const SeverityArcGauge: React.FC<SeverityArcGaugeProps> = ({
+  penaltyPct,
+  severityLabel,
+}) => {
+  const isHealthy = penaltyPct === 0;
+  const isModerate = penaltyPct > 0 && penaltyPct <= 0.25;
+  const isSevere = penaltyPct > 0.25;
 
-  let strokeColor = "#10B981"; // Healthy Green
-  let statusText = "0% Penalty";
-  let statusColor = "text-brand-primary";
-
-  if (penaltyPct >= 40) {
-    strokeColor = "#F59E0B"; // Severe Amber
-    statusText = `-${penaltyPct}% Severe`;
-    statusColor = "text-amber-400";
-  } else if (penaltyPct > 0) {
-    strokeColor = "#FBBF24"; // Moderate Yellow
-    statusText = `-${penaltyPct}% Moderate`;
-    statusColor = "text-yellow-400";
-  }
+  const color = isHealthy
+    ? "#B7F36B"
+    : isModerate
+    ? "#F59E0B"
+    : "#EF4444";
 
   return (
-    <div className="flex flex-col items-center select-none">
-      <div className="relative" style={{ width: size, height: size / 2 + 12 }}>
-        <svg className="w-full h-full" viewBox={`0 0 ${size} ${size / 2 + 12}`}>
-          {/* Subtle tick markings at 0%, 25%, 50%, 75%, 100% */}
-          <defs>
-            <filter id="arcGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={strokeColor} floodOpacity="0.7" />
-            </filter>
-          </defs>
-
-          {/* Background Arc */}
-          <path
-            d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
-            stroke="#14211A"
-            strokeWidth={strokeWidth}
-            fill="none"
-            strokeLinecap="round"
-          />
-
-          {/* Active Penalty Arc */}
-          <path
-            d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
-            stroke={strokeColor}
-            strokeWidth={strokeWidth}
-            fill="none"
-            strokeDasharray={arcLength}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-            className="transition-all duration-700 ease-out"
-            filter="url(#arcGlow)"
-          />
-        </svg>
-
-        {/* Value Label */}
-        <div className="absolute bottom-0 inset-x-0 flex flex-col items-center">
-          <span className={`text-lg font-black font-mono tracking-tight tabular-nums ${statusColor}`}>
-            {penaltyPct === 0 ? "0% Loss" : `-${penaltyPct}%`}
-          </span>
-        </div>
+    <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#071C16]/80 border border-[#C8E6C9]/10">
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#102A20] font-mono font-bold text-sm" style={{ color }}>
+        -{(penaltyPct * 100).toFixed(0)}%
       </div>
-      <span className="text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-brand-muted mt-1.5">
-        Foliar Impairment
-      </span>
+      <div>
+        <div className="text-[10px] font-mono uppercase tracking-wider text-[#829B87]">Yield Pathology Deficit</div>
+        <div className="text-xs font-semibold text-[#F3F5EC]">{severityLabel}</div>
+      </div>
     </div>
   );
 };

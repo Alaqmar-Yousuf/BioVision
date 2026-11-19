@@ -68,3 +68,5 @@ Thumbs.db
 # AI Assistant and Local Tooling Caches
 .gemini/
 scratch/
+AGENTS.md
+frontend/AGENTS.md

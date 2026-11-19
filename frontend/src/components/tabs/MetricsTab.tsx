@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "@/config/api";
-import { Cpu, Award, LineChart, ZoomIn, X } from "lucide-react";
+import { Cpu, Award, LineChart, ZoomIn, X, ShieldCheck, Activity, BarChart2, Layers } from "lucide-react";
 
 export const MetricsTab = () => {
   const [metrics, setMetrics] = useState<any>(null);
@@ -20,7 +20,6 @@ export const MetricsTab = () => {
       } catch (err) {
         console.error("API metrics unavailable, trying static fallback:", err);
       }
-      // Fallback: load static JSON files from /reports/ (bundled in public/)
       try {
         const [clfRes, yldRes] = await Promise.all([
           fetch("/reports/classifier_metrics.json"),
@@ -84,120 +83,111 @@ export const MetricsTab = () => {
   return (
     <div className="space-y-8">
       {/* Overview Banner */}
-      <div className="card-bento rounded-3xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="rounded-3xl border border-white/[0.08] bg-zinc-950/70 backdrop-blur-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
         <div>
-          <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-brand-muted mb-1">
-            🔬 Empirical Validation
+          <div className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1">
+            Empirical Telemetry
           </div>
           <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <Cpu className="text-brand-primary w-5 h-5" /> Empirical Evaluation & Validation Artifacts
+            <Cpu className="text-emerald-400 w-4 h-4" /> Empirical Evaluation & Validation Artifacts
           </h2>
-          <p className="text-xs text-brand-muted mt-0.5">
-            Real performance metrics and plots generated directly during model training pipelines
+          <p className="text-xs text-zinc-500 mt-0.5 font-mono">
+            Direct outputs from automated training pipelines on 4,249 holdout test images and 31,621 FAO records
           </p>
         </div>
-        <span className="text-xs font-mono font-semibold px-3 py-1.5 rounded-xl bg-brand-secondary/80 text-brand-tertiary border border-brand-primary/30 flex items-center gap-1.5 shadow-sm flex-shrink-0">
-          <Award className="w-4 h-4 text-brand-primary" /> Verified Reports
+        <span className="text-xs font-mono font-medium px-3.5 py-1.5 rounded-full bg-white/[0.04] text-zinc-300 border border-white/10 flex items-center gap-2 flex-shrink-0">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Verified Pipelines
         </span>
       </div>
 
       {/* Vision Model Section */}
-      <div className="space-y-3.5">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-brand-muted mb-0.5">
-              📐 Classifier Benchmarks
-            </div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-brand-primary"></span>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-400" />
+            <h3 className="text-sm font-bold text-white tracking-tight uppercase">
               1. Foliar Pathology Classifier (EfficientNetB0)
             </h3>
           </div>
-          <span className="text-xs text-brand-muted font-mono">Input: 224x224 RGB • {nClasses} Classes</span>
+          <span className="text-xs text-zinc-500 font-mono">Input: 224x224 RGB &bull; {nClasses} Classes</span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="card-bento rounded-3xl p-5">
-            <span className="text-xs text-brand-muted font-medium font-mono text-[11px] uppercase">Test Set Accuracy</span>
-            <div className="text-3xl font-black text-white font-mono mt-2 tabular-nums">{testAcc}</div>
-            <p className="text-[11px] text-brand-tertiary mt-1 font-mono tabular-nums">{nTestImages} Test Leaves</p>
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-5 backdrop-blur-xl">
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Test Set Accuracy</span>
+            <div className="text-3xl font-bold text-white font-mono mt-2 tabular-nums">{testAcc}</div>
+            <p className="text-[11px] text-emerald-400 mt-1 font-mono tabular-nums">{nTestImages} Test Leaves</p>
           </div>
 
-          <div className="card-bento rounded-3xl p-5">
-            <span className="text-xs text-brand-muted font-medium font-mono text-[11px] uppercase">Macro F1-Score</span>
-            <div className="text-3xl font-black text-white font-mono mt-2 tabular-nums">{macroF1}</div>
-            <p className="text-[11px] text-brand-tertiary mt-1">Balanced multi-class mean</p>
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-5 backdrop-blur-xl">
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Macro F1-Score</span>
+            <div className="text-3xl font-bold text-white font-mono mt-2 tabular-nums">{macroF1}</div>
+            <p className="text-[11px] text-emerald-400 mt-1 font-mono">Balanced multi-class mean</p>
           </div>
 
-          <div className="card-bento rounded-3xl p-5">
-            <span className="text-xs text-brand-muted font-medium font-mono text-[11px] uppercase">Categorical Classes</span>
-            <div className="text-3xl font-black text-white font-mono mt-2 tabular-nums">{nClasses}</div>
-            <p className="text-[11px] text-brand-tertiary mt-1">20 Crop Species</p>
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-5 backdrop-blur-xl">
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Categorical Classes</span>
+            <div className="text-3xl font-bold text-white font-mono mt-2 tabular-nums">{nClasses}</div>
+            <p className="text-[11px] text-zinc-400 mt-1 font-mono">20 Crop Species</p>
           </div>
 
-          <div className="card-bento rounded-3xl p-5">
-            <span className="text-xs text-brand-muted font-medium font-mono text-[11px] uppercase">Explainability</span>
-            <div className="text-3xl font-black text-white font-mono mt-2">Grad-CAM</div>
-            <p className="text-[11px] text-brand-tertiary mt-1">Conv Saliency Heatmaps</p>
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-5 backdrop-blur-xl">
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Explainability</span>
+            <div className="text-2xl font-bold text-white font-mono mt-2.5">Grad-CAM</div>
+            <p className="text-[11px] text-emerald-400 mt-1 font-mono">Conv Saliency Heatmaps</p>
           </div>
         </div>
       </div>
 
       {/* Yield Ensemble Section */}
-      <div className="space-y-3.5">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-brand-muted mb-0.5">
-              🌾 Harvest Regression Benchmarks
-            </div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-brand-tertiary"></span>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-cyan-400" />
+            <h3 className="text-sm font-bold text-white tracking-tight uppercase">
               2. Crop Harvest Yield Model ({bestModel})
             </h3>
           </div>
-          <span className="text-xs text-brand-muted font-mono tabular-nums">Trained on {nRows} Observations</span>
+          <span className="text-xs text-zinc-500 font-mono tabular-nums">Trained on {nRows} Observations</span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="card-bento rounded-3xl p-5">
-            <span className="text-xs text-brand-muted font-medium font-mono text-[11px] uppercase">Test R² Score</span>
-            <div className="text-3xl font-black text-white font-mono mt-2 tabular-nums">{testR2}</div>
-            <p className="text-[11px] text-brand-tertiary mt-1 font-mono">Variance Explained</p>
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-5 backdrop-blur-xl">
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Test R² Score</span>
+            <div className="text-3xl font-bold text-white font-mono mt-2 tabular-nums">{testR2}</div>
+            <p className="text-[11px] text-cyan-400 mt-1 font-mono">Variance Explained</p>
           </div>
 
-          <div className="card-bento rounded-3xl p-5">
-            <span className="text-xs text-brand-muted font-medium font-mono text-[11px] uppercase">Test MAE</span>
-            <div className="text-2xl font-black text-white font-mono mt-2 truncate tabular-nums">{testMae}</div>
-            <p className="text-[11px] text-brand-tertiary mt-1 font-mono tabular-nums">{testMaeTonnes}</p>
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-5 backdrop-blur-xl">
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Test MAE</span>
+            <div className="text-xl sm:text-2xl font-bold text-white font-mono mt-2 tabular-nums whitespace-nowrap">{testMae}</div>
+            <p className="text-[11px] text-cyan-400 mt-1 font-mono tabular-nums">{testMaeTonnes}</p>
           </div>
 
-          <div className="card-bento rounded-3xl p-5">
-            <span className="text-xs text-brand-muted font-medium font-mono text-[11px] uppercase">Dataset Scale</span>
-            <div className="text-3xl font-black text-white font-mono mt-2 tabular-nums">{nRows}</div>
-            <p className="text-[11px] text-brand-tertiary mt-1 font-mono">FAO Global Data Points</p>
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-5 backdrop-blur-xl">
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Dataset Scale</span>
+            <div className="text-3xl font-bold text-white font-mono mt-2 tabular-nums">{nRows}</div>
+            <p className="text-[11px] text-zinc-400 mt-1 font-mono">FAO Global Data Points</p>
           </div>
 
-          <div className="card-bento rounded-3xl p-5">
-            <span className="text-xs text-brand-muted font-medium font-mono text-[11px] uppercase">Crops Evaluated</span>
-            <div className="text-3xl font-black text-white font-mono mt-2 tabular-nums">26</div>
-            <p className="text-[11px] text-brand-tertiary mt-1 font-mono">Global Commodities</p>
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-5 backdrop-blur-xl">
+            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Covered Crops</span>
+            <div className="text-3xl font-bold text-white font-mono mt-2 tabular-nums">26</div>
+            <p className="text-[11px] text-cyan-400 mt-1 font-mono">Full Cross-Tab Scope</p>
           </div>
         </div>
       </div>
 
-      {/* Generated Training Plots - Dark Museum Gallery */}
+      {/* Generated Report Plots Grid */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-brand-muted mb-0.5">
-              📊 Empirical Gallery
-            </div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <LineChart className="w-4 h-4 text-brand-primary" />
-              3. Verified Empirical Artifacts & Training Plots
+          <div className="flex items-center gap-2">
+            <LineChart className="w-4 h-4 text-emerald-400" />
+            <h3 className="text-sm font-bold text-white tracking-tight uppercase">
+              3. Visual Validation Curves & Confusion Matrices
             </h3>
           </div>
-          <span className="text-xs text-brand-muted font-mono">Click any plot to enlarge</span>
+          <span className="text-xs text-zinc-500 font-mono">Click to enlarge</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -205,59 +195,53 @@ export const MetricsTab = () => {
             <div
               key={i}
               onClick={() => setActiveImageModal(plot.filename)}
-              className="card-bento rounded-3xl p-6 hover:border-brand-primary/50 transition-all cursor-pointer group shadow-xl flex flex-col justify-between"
+              className="group rounded-3xl border border-white/[0.08] bg-zinc-950/70 p-5 hover:border-white/20 transition-all cursor-pointer backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.4)] flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-tertiary font-mono">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-white/[0.04] text-zinc-400 border border-white/[0.08]">
                     {plot.type}
                   </span>
-                  <span className="text-xs text-brand-muted group-hover:text-brand-primary flex items-center gap-1 transition-colors font-mono">
-                    <ZoomIn className="w-3.5 h-3.5" /> Enlarge
-                  </span>
+                  <ZoomIn className="w-4 h-4 text-zinc-600 group-hover:text-white transition-colors" />
                 </div>
-                <h4 className="text-sm font-bold text-white mb-1 tracking-tight">{plot.title}</h4>
-                <p className="text-xs text-brand-muted mb-4">{plot.desc}</p>
+                <h4 className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">
+                  {plot.title}
+                </h4>
+                <p className="text-xs text-zinc-500 mt-1 leading-relaxed font-mono">
+                  {plot.desc}
+                </p>
               </div>
 
-              {/* Museum frame with subtle vignette */}
-              <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-black/90 ring-1 ring-white/10 flex items-center justify-center">
+              <div className="mt-4 relative aspect-[16/10] w-full rounded-2xl overflow-hidden bg-black/60 border border-white/5 flex items-center justify-center">
                 <img
                   src={`/reports/${plot.filename}`}
                   alt={plot.title}
-                  className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 shadow-[inset_0_0_30px_rgba(0,0,0,0.7)] rounded-2xl pointer-events-none" />
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Fullscreen Image Modal */}
+      {/* Full-Screen Zoom Modal */}
       {activeImageModal && (
         <div
           onClick={() => setActiveImageModal(null)}
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 cursor-pointer"
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative max-w-4xl w-full bg-brand-surface/95 border border-white/15 rounded-3xl p-6 shadow-2xl space-y-4"
-          >
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-sm font-bold text-white font-mono">{activeImageModal}</h3>
-              <button
-                onClick={() => setActiveImageModal(null)}
-                className="w-8 h-8 rounded-full bg-brand-neutral border border-white/10 flex items-center justify-center text-gray-300 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="w-full max-h-[75vh] overflow-auto flex items-center justify-center bg-black/60 rounded-2xl p-2 border border-white/5">
+          <div className="relative max-w-5xl w-full max-h-[90vh] bg-zinc-950 border border-white/20 rounded-3xl p-6 overflow-hidden flex flex-col">
+            <button
+              onClick={() => setActiveImageModal(null)}
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex-1 flex items-center justify-center mt-6">
               <img
                 src={`/reports/${activeImageModal}`}
-                alt="Enlarged Plot"
-                className="max-h-[70vh] w-auto object-contain rounded-xl"
+                alt="Enlarged Report Plot"
+                className="max-h-[75vh] w-auto object-contain rounded-xl"
               />
             </div>
           </div>

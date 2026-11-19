@@ -1,6 +1,7 @@
 "use client";
+
 import React from "react";
-import { FileText, Download, AlertTriangle, CheckCircle2, ShieldAlert, Sprout, Info } from "lucide-react";
+import { FileText, Download, AlertTriangle, CheckCircle2, ShieldAlert, Sprout, Info, Printer, Layers } from "lucide-react";
 import { SeverityArcGauge } from "../RadialGauge";
 
 interface ReportTabProps {
@@ -14,16 +15,18 @@ export const ReportTab: React.FC<ReportTabProps> = ({ diagnosisData, yieldData }
 
   if (!hasDiagnosis || !hasYield) {
     return (
-      <div className="card-bento rounded-3xl p-12 text-center flex flex-col items-center justify-center py-28 shadow-xl">
-        <div className="w-16 h-16 rounded-2xl bg-brand-secondary/40 border border-brand-primary/30 flex items-center justify-center text-brand-primary mb-4 shadow-inner">
-          <Info className="w-8 h-8 text-brand-tertiary" />
+      <div className="rounded-3xl border border-white/[0.08] bg-[#070D09]/80 backdrop-blur-2xl p-12 text-center flex flex-col items-center justify-center py-28 shadow-xl space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-[#A3E635]">
+          <Info className="w-6 h-6 text-[#A3E635]" />
         </div>
-        <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-brand-muted mb-2">
-          📋 Agro-Dossier Standby
+        <div className="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500">
+          Synthesized Dossier Standby
         </div>
-        <h3 className="text-base font-bold text-white tracking-tight">Integrated Agro-Report Requires Both Readings</h3>
-        <p className="text-xs text-brand-muted mt-1.5 max-w-md leading-relaxed">
-          Please complete <strong>Disease Diagnosis (Tab 1)</strong> and <strong>Yield Forecast (Tab 2)</strong>. The system will synthesize leaf pathology with harvest projections.
+        <h3 className="text-xl font-bold text-white tracking-tight font-display">
+          Complete Both Diagnostic & Yield Steps
+        </h3>
+        <p className="text-xs text-zinc-400 max-w-md leading-relaxed font-mono">
+          Run foliar pathology diagnosis in Tab 01 and compute harvest projections in Tab 02 to generate a synchronized agronomic intelligence report.
         </p>
       </div>
     );
@@ -46,13 +49,13 @@ export const ReportTab: React.FC<ReportTabProps> = ({ diagnosisData, yieldData }
 
   if (diag.is_healthy) {
     penaltyPct = 0.0;
-    advice = "Foliage is healthy. No yield reduction expected from disease.";
+    advice = "Foliage is healthy. No yield reduction expected from foliar pathology.";
   } else if (diagLabelLower.includes("early") || diagLabelLower.includes("spot")) {
     penaltyPct = 0.20;
-    advice = "Moderate lesions detected — estimated 20% yield loss without treatment.";
+    advice = "Moderate foliar lesions detected — estimated 20% yield loss without intervention.";
   } else {
     penaltyPct = 0.50;
-    advice = "Severe blight/infection — estimated 50% yield loss. Immediate fungicide recommended.";
+    advice = "Severe blight or systemic infection detected — estimated 50% yield reduction. Immediate fungicide protocol advised.";
   }
 
   const adjustedHgHa = cropMatches ? Math.round(baselineHgHa * (1.0 - penaltyPct)) : baselineHgHa;
@@ -97,143 +100,117 @@ export const ReportTab: React.FC<ReportTabProps> = ({ diagnosisData, yieldData }
     document.body.removeChild(element);
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Header Bar */}
-      <div className="card-bento rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-8 print:p-0">
+      {/* Top Action Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/[0.07] print:hidden">
         <div>
-          <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-brand-muted mb-1">
-            📋 Integrated Agro-Dossier
+          <div className="text-xs font-mono uppercase tracking-[0.2em] text-[#A3E635]">
+            Synthesized Intelligence
           </div>
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <FileText className="text-brand-primary w-5 h-5" /> Integrated Agro-Pathology & Yield Synthesis
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-display">
+            Comprehensive Field Dossier
           </h2>
-          <p className="text-xs text-brand-muted mt-0.5">
-            Synchronizes foliar deep learning pathology with FAO macro harvest modeling
-          </p>
         </div>
-
-        <button
-          onClick={handleDownloadReport}
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-primary to-brand-tertiary text-brand-neutral font-black text-xs flex items-center gap-2 hover:brightness-110 transition-all cursor-pointer shadow-lg shadow-brand-primary/20 flex-shrink-0"
-        >
-          <Download className="w-4 h-4" /> Download Inspection Report (.txt)
-        </button>
-      </div>
-
-      {/* Synchronization Alert */}
-      {cropMatches ? (
-        <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 text-xs text-emerald-300 flex items-start gap-3 shadow-sm">
-          <CheckCircle2 className="w-5 h-5 text-brand-primary flex-shrink-0 mt-0.5" />
-          <div className="leading-relaxed">
-            <span className="font-bold">Synchronized Biological Assessment:</span> Both modules evaluate <strong>{selectedCrop}</strong>. Foliar disease severity directly scales the realizable harvest yield.
-          </div>
-        </div>
-      ) : (
-        <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/40 text-xs text-amber-300 flex items-start gap-3 shadow-sm">
-          <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-          <div className="leading-relaxed">
-            <span className="font-bold">Crop Mismatch Notice:</span> Tab 1 diagnosed a <strong>{diagCropName}</strong> leaf, while Tab 2 evaluated <strong>{selectedCrop}</strong>. Plant pathogens are host-specific ({diagCropName} pathogens cannot infect {selectedCrop}). No cross-species penalty is applied. Select a matching crop in Tab 2 for synchronized penalty scaling.
-          </div>
-        </div>
-      )}
-
-      {/* Main Dossier Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Metric 1: Potential Yield */}
-        <div className="card-bento rounded-3xl p-6 flex flex-col justify-between">
-          <div>
-            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-brand-muted font-mono">
-              Unconstrained Potential Yield
-            </span>
-            <div className="text-4xl font-black text-white mt-2 font-mono tabular-nums">
-              {baselineTonnes} <span className="text-base font-normal text-brand-muted">t/ha</span>
-            </div>
-            <p className="text-xs text-brand-muted mt-1 font-mono tabular-nums">
-              ({baselineHgHa.toLocaleString()} hg/ha)
-            </p>
-          </div>
-          <p className="text-[11px] text-brand-muted mt-4 pt-3 border-t border-white/5">
-            Baseline harvest projection under current agro-climatic conditions.
-          </p>
-        </div>
-
-        {/* Metric 2: Severity Arc Gauge */}
-        <div className="card-bento rounded-3xl p-6 flex flex-col justify-between items-center text-center">
-          <div className="w-full flex flex-col items-center">
-            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-brand-muted font-mono mb-2">
-              Pathological Severity Penalty
-            </span>
-            <div className="py-1">
-              <SeverityArcGauge penaltyPct={cropMatches ? penaltyPct * 100 : 0} />
-            </div>
-            <p className="text-xs text-brand-muted mt-2 font-mono">
-              {cropMatches
-                ? (penaltyPct > 0 ? `Estimated Loss: ≈ ${lostTonnes} t/ha` : "Healthy foliage — No penalty")
-                : "Independent readings (No cross-species penalty)"}
-            </p>
-          </div>
-          <p className="text-[11px] text-brand-muted mt-3 pt-3 border-t border-white/5 w-full text-center">
-            Photosynthetic & foliar vascular impairment factor.
-          </p>
-        </div>
-
-        {/* Metric 3: Net Harvest */}
-        <div className="card-bento rounded-3xl p-6 bg-gradient-to-br from-brand-secondary/50 via-brand-surface/90 to-brand-neutral border-brand-primary/50 shadow-2xl shadow-brand-primary/15 flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/15 rounded-full blur-2xl pointer-events-none" />
-          <div>
-            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-brand-tertiary font-mono">
-              Realizable Net Harvest
-            </span>
-            <div className="text-4xl font-black text-white mt-2 font-mono tabular-nums">
-              {adjustedTonnes} <span className="text-base font-normal text-brand-primary">t/ha</span>
-            </div>
-            <p className="text-xs text-brand-muted mt-1 font-mono tabular-nums">
-              ({adjustedHgHa.toLocaleString()} hg/ha)
-            </p>
-          </div>
-          <p className="text-[11px] text-brand-muted mt-4 pt-3 border-t border-white/5">
-            Estimated net harvest realizing disease stress impact.
-          </p>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handlePrint}
+            className="px-4 py-2 rounded-full border border-white/10 hover:border-white/30 text-xs font-mono text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print Report</span>
+          </button>
+          <button
+            onClick={handleDownloadReport}
+            className="px-4 py-2 rounded-full bg-[#A3E635] text-black font-semibold text-xs font-mono flex items-center gap-1.5 hover:bg-[#bef264] transition-all cursor-pointer shadow-md"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Download .TXT</span>
+          </button>
         </div>
       </div>
 
-      {/* Detail Sections */}
-      <div className="card-bento rounded-3xl p-7 space-y-6">
-        <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-brand-tertiary flex items-center gap-2 mb-3">
-            <Sprout className="w-4 h-4" /> Section 1: Foliar Pathology Findings
-          </h4>
-          <div className="p-4 rounded-2xl bg-brand-neutral/60 border border-white/5 flex items-start gap-3.5">
-            {diag.is_healthy ? (
-              <CheckCircle2 className="w-6 h-6 text-brand-primary mt-0.5 flex-shrink-0" />
-            ) : (
-              <AlertTriangle className="w-6 h-6 text-amber-400 mt-0.5 flex-shrink-0" />
-            )}
+      {/* Main Official Dossier Sheet */}
+      <div className="rounded-3xl border border-white/[0.08] bg-[#070D09]/80 backdrop-blur-2xl p-6 sm:p-10 space-y-8 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+        {/* Certificate Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-white/[0.08]">
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#B7F36B]/80">
+              OFFICIAL CERTIFICATE &bull; BIOVISION RESEARCH PLATFORM
+            </span>
+            <h3 className="text-xl font-bold text-white tracking-tight font-display">
+              BioVision Multimodal Diagnostic Assessment
+            </h3>
+            <p className="text-xs text-zinc-400 font-mono">
+              Evaluated on {new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
+            </p>
+          </div>
+
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-zinc-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#A3E635]" />
+            <span>{cropMatches ? "Synchronized Host Profile" : "Independent Profiles"}</span>
+          </div>
+        </div>
+
+        {/* 2-Column Assessment Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Diagnostic Assessment Column */}
+          <div className="p-6 rounded-2xl bg-black/40 border border-white/[0.06] space-y-4">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-[#A3E635]">
+              Pathological Assessment
+            </div>
             <div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-bold text-white">{diag.class_name}</span>
-                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-brand-primary/20 text-brand-primary tabular-nums">
-                  {(diag.probability * 100).toFixed(1)}% Confidence
-                </span>
-              </div>
-              <p className="text-xs text-brand-muted mt-1.5 leading-relaxed">
-                {diag.is_healthy
-                  ? "Leaf tissue demonstrates healthy venation and absence of chlorosis or fungal spore bodies."
-                  : `Visual diagnosis identified ${diag.disease}. Grad-CAM heatmaps highlight focal activation on necrotic lesion areas.`}
+              <div className="text-lg font-bold text-white">{diag.class_name}</div>
+              <p className="text-xs text-zinc-500 font-mono mt-0.5">
+                Model Confidence: <span className="text-white font-bold">{(diag.probability * 100).toFixed(1)}%</span>
               </p>
             </div>
+            <div className="flex items-center gap-2 pt-2">
+              {diag.is_healthy ? (
+                <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Healthy Foliage
+                </span>
+              ) : (
+                <span className="text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-mono flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5" /> Active Pathology Detected
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Harvest Yield Column */}
+          <div className="p-6 rounded-2xl bg-black/40 border border-white/[0.06] space-y-4">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-[#06B6D4]">
+              Harvest Yield Projection
+            </div>
+            <div>
+              <div className="text-3xl font-black font-mono text-white">
+                {adjustedTonnes} <span className="text-base font-normal text-zinc-400">t/ha</span>
+              </div>
+              <p className="text-xs text-zinc-500 font-mono mt-0.5">
+                ({adjustedHgHa.toLocaleString()} hg/ha net projected)
+              </p>
+            </div>
+            {cropMatches && penaltyPct > 0 && (
+              <div className="text-xs font-mono text-amber-400 pt-1">
+                Yield penalty applied: -{(penaltyPct * 100).toFixed(0)}% ({lostTonnes} t/ha deficit)
+              </div>
+            )}
           </div>
         </div>
 
-        <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-brand-tertiary flex items-center gap-2 mb-3">
-            <ShieldAlert className="w-4 h-4" /> Section 2: Agronomic Guidance & Intervention
-          </h4>
-          <div className="p-4 rounded-2xl bg-brand-neutral/60 border border-white/5 text-xs leading-relaxed text-gray-300">
-            <p className="font-bold text-white mb-1 font-mono text-[11px] uppercase tracking-wider">Recommended Field Action:</p>
-            <p className="text-brand-muted">{advice}</p>
+        {/* Agronomic Action Plan */}
+        <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-2">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold">
+            Agronomic Action Guidance
           </div>
+          <p className="text-sm text-zinc-200 leading-relaxed font-mono">
+            {advice}
+          </p>
         </div>
       </div>
     </div>
