@@ -1,0 +1,6 @@
+{
+  "test_accuracy": 0.9656389738762061,
+  "macro_f1": 0.9688065614831953,
+  "n_classes": 62,
+  "n_test_images": 4249
+}

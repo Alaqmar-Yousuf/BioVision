@@ -1,0 +1,70 @@
+# ==========================================
+# BioVision Root Git Ignore Configuration
+# ==========================================
+
+# Python / Virtual Environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Next.js / Node.js
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+frontend/out/
+build/
+dist/
+.eslintcache
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+frontend/.env.local
+frontend/.env.*.local
+
+# Large Datasets and Archives (Exclude from Git)
+datasets/
+data/
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Retain essential trained models (unignore model files)
+!models/disease_model.keras
+!models/yield_model.joblib
+!models/class_names.json
+!models/feature_schema.json
+
+# IDE / OS metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# AI Assistant and Local Tooling Caches
+.gemini/
+scratch/

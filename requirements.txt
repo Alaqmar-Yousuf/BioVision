@@ -1,0 +1,10 @@
+tensorflow>=2.16
+scikit-learn
+pandas
+numpy
+opencv-python
+pillow
+matplotlib
+seaborn
+streamlit
+joblib
