@@ -6,13 +6,14 @@ import { TrendingUp, CloudRain, Thermometer, FlaskConical, Globe, Sprout, BarCha
 
 interface YieldTabProps {
   onYieldComplete?: (yieldData: any) => void;
+  preselectedCrop?: string | null;
 }
 
 const UPCOMING_VISION_CROPS_NAMES = [
   "Barley", "Carrots and turnips", "Dates", "Papayas", "Pears", "Pineapples", "Spinach"
 ];
 
-export const YieldTab: React.FC<YieldTabProps> = ({ onYieldComplete }) => {
+export const YieldTab: React.FC<YieldTabProps> = ({ onYieldComplete, preselectedCrop }) => {
   const [countries, setCountries] = useState<string[]>(defaultSchema.Area?.options || []);
   const [crops, setCrops] = useState<string[]>(defaultSchema.Item?.options || []);
   const [schemaLimits, setSchemaLimits] = useState<any>({
@@ -28,6 +29,13 @@ export const YieldTab: React.FC<YieldTabProps> = ({ onYieldComplete }) => {
     pesticides_tonnes: 3500,
     avg_temp: 17.8,
   });
+
+  // Auto-select crop from diagnosis result
+  useEffect(() => {
+    if (preselectedCrop) {
+      setFormData((prev) => ({ ...prev, Item: preselectedCrop }));
+    }
+  }, [preselectedCrop]);
 
   const [forecast, setForecast] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -121,6 +129,17 @@ export const YieldTab: React.FC<YieldTabProps> = ({ onYieldComplete }) => {
               </span>
             </div>
           </div>
+
+          {/* Precision Dropdowns */}
+          {preselectedCrop && (
+            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-brand-primary/10 border border-brand-primary/30 text-xs font-medium text-brand-primary">
+              <Sprout className="w-4 h-4 flex-shrink-0" />
+              <span>
+                Crop auto-selected from diagnosis:{" "}
+                <strong className="text-white">{preselectedCrop}</strong>
+              </span>
+            </div>
+          )}
 
           {/* Precision Dropdowns */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

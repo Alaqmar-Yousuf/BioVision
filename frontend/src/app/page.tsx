@@ -12,6 +12,7 @@ export default function Home() {
   const [apiConnected, setApiConnected] = useState(false);
   const [diagnosisData, setDiagnosisData] = useState<any>(null);
   const [yieldData, setYieldData] = useState<any>(null);
+  const [preselectedCrop, setPreselectedCrop] = useState<string | null>(null);
 
   // Probe FastAPI backend periodically
   useEffect(() => {
@@ -45,10 +46,41 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
         {activeTab === "diagnose" && (
-          <DiagnosisTab onDiagnosisComplete={(d) => setDiagnosisData(d)} />
+        <DiagnosisTab onDiagnosisComplete={(d) => {
+            setDiagnosisData(d);
+            // Map diagnosed crop name → FAO crop name for Yield Forecaster
+            const CROP_TO_FAO: Record<string, string | null> = {
+              "Apple": "Apples",
+              "Banana": "Bananas",
+              "Blueberry": "Blueberries",
+              "Cherry": "Cherries",
+              "Corn": "Maize (corn)",
+              "Corn (Maize)": "Maize (corn)",
+              "Cucumber": "Cucumbers and gherkins",
+              "Grape": "Grapes",
+              "Mango": "Mangoes, guavas and mangosteens",
+              "Orange": "Oranges",
+              "Peach": "Peaches and nectarines",
+              "Pepper (Bell)": "Chillies and peppers, green (Capsicum spp. and Pimenta spp.)",
+              "Potato": "Potatoes",
+              "Raspberry": "Raspberries",
+              "Rice": "Rice",
+              "Soybean": null,
+              "Squash": "Pumpkins, squash and gourds",
+              "Strawberry": "Strawberries",
+              "Tomato": "Tomatoes",
+              "Watermelon": "Watermelons",
+              "Wheat": "Wheat",
+            };
+            const detectedCrop = d?.top_prediction?.crop;
+            const faoCrop = detectedCrop ? (CROP_TO_FAO[detectedCrop] ?? null) : null;
+            setPreselectedCrop(faoCrop);
+          }}
+          onGoToForecaster={() => setActiveTab("forecast")}
+        />
         )}
         {activeTab === "forecast" && (
-          <YieldTab onYieldComplete={(y) => setYieldData(y)} />
+          <YieldTab onYieldComplete={(y) => setYieldData(y)} preselectedCrop={preselectedCrop} />
         )}
         {activeTab === "report" && (
           <ReportTab

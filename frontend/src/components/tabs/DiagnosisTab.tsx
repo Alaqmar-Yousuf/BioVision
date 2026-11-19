@@ -1,12 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import { API_BASE_URL } from "@/config/api";
-import { UploadCloud, CheckCircle2, AlertTriangle, RefreshCw, Sparkles, Info, Clock, ChevronDown, ChevronUp, Scan } from "lucide-react";
+import { UploadCloud, CheckCircle2, AlertTriangle, RefreshCw, Sparkles, Info, Clock, ChevronDown, ChevronUp, Scan, TrendingUp } from "lucide-react";
 import { ImageComparisonSlider } from "../ImageComparisonSlider";
 import { CircularConfidenceGauge } from "../RadialGauge";
 
 interface DiagnosisTabProps {
   onDiagnosisComplete?: (diagnosis: any) => void;
+  onGoToForecaster?: () => void;
 }
 
 const ACTIVE_VISION_CROPS = [
@@ -42,7 +43,7 @@ const UPCOMING_VISION_CROPS = [
   { name: "Spinach", icon: "🥬", status: "Active in Yield • Vision Next" }
 ];
 
-export const DiagnosisTab: React.FC<DiagnosisTabProps> = ({ onDiagnosisComplete }) => {
+export const DiagnosisTab: React.FC<DiagnosisTabProps> = ({ onDiagnosisComplete, onGoToForecaster }) => {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -412,6 +413,19 @@ export const DiagnosisTab: React.FC<DiagnosisTabProps> = ({ onDiagnosisComplete 
                     <p className="text-gray-200 font-bold">{result.advisory.severity}</p>
                     <p className="text-brand-muted leading-relaxed">{result.advisory.treatment}</p>
                   </div>
+                )}
+
+                {/* Go to Yield Forecaster CTA */}
+                {onGoToForecaster && (
+                  <button
+                    onClick={onGoToForecaster}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border border-brand-primary/40 bg-brand-primary/10 hover:bg-brand-primary/20 text-brand-primary hover:text-white font-bold text-sm transition-all cursor-pointer"
+                  >
+                    <TrendingUp className="w-4 h-4" />
+                    Forecast Yield for{" "}
+                    <span className="text-white">{result.top_prediction.crop}</span>
+                    &nbsp;→
+                  </button>
                 )}
               </div>
             )}
