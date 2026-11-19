@@ -13,6 +13,17 @@ const UPCOMING_VISION_CROPS_NAMES = [
   "Barley", "Carrots and turnips", "Dates", "Papayas", "Pears", "Pineapples", "Spinach"
 ];
 
+// FAO crop names that have NO pathology vision model (show "Coming Soon" in forecaster dropdown)
+const NO_VISION_FAO_CROPS = new Set([
+  "Barley",
+  "Carrots and turnips",
+  "Dates",
+  "Papayas",
+  "Pears",
+  "Pineapples",
+  "Spinach",
+]);
+
 export const YieldTab: React.FC<YieldTabProps> = ({ onYieldComplete, preselectedCrop }) => {
   const [countries, setCountries] = useState<string[]>(defaultSchema.Area?.options || []);
   const [crops, setCrops] = useState<string[]>(defaultSchema.Item?.options || []);
@@ -100,7 +111,7 @@ export const YieldTab: React.FC<YieldTabProps> = ({ onYieldComplete, preselected
   const tempMin = schemaLimits?.temp?.min ?? 1.5;
   const tempMax = schemaLimits?.temp?.max ?? 32;
 
-  const isUpcoming = UPCOMING_VISION_CROPS_NAMES.includes(formData.Item);
+  const isUpcoming = NO_VISION_FAO_CROPS.has(formData.Item);
 
   const rainPct = ((formData.average_rain_fall_mm_per_year - rainMin) / (rainMax - rainMin)) * 100;
   const pestPct = ((formData.pesticides_tonnes - pestMin) / (pestMax - pestMin)) * 100;
@@ -174,17 +185,28 @@ export const YieldTab: React.FC<YieldTabProps> = ({ onYieldComplete, preselected
                   className="w-full bg-brand-neutral/90 border border-white/10 rounded-2xl px-4 py-3 text-white appearance-none focus:border-brand-primary focus:outline-none cursor-pointer transition-all shadow-inner text-sm hover:border-brand-primary/50 font-medium"
                 >
                   {crops.length > 0 ? (
-                    crops.map((cr, i) => <option key={i} value={cr}>{cr}</option>)
+                    <>
+                      <optgroup label="✅ Pathology + Yield Active">
+                        {crops.filter(cr => !NO_VISION_FAO_CROPS.has(cr)).map((cr, i) => (
+                          <option key={i} value={cr}>{cr}</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="⏳ Yield Active • Vision Diagnosis Coming Soon">
+                        {crops.filter(cr => NO_VISION_FAO_CROPS.has(cr)).map((cr, i) => (
+                          <option key={i} value={cr}>{cr} — Coming Soon (Vision)</option>
+                        ))}
+                      </optgroup>
+                    </>
                   ) : (
                     <option value="Potatoes">Potatoes</option>
                   )}
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted pointer-events-none" />
               </div>
-              {isUpcoming && (
+              {(isUpcoming || NO_VISION_FAO_CROPS.has(formData.Item)) && (
                 <div className="mt-2.5 px-3 py-1.5 rounded-xl bg-brand-secondary/50 border border-brand-primary/40 flex items-center gap-2 text-[11px] text-brand-tertiary">
                   <Clock className="w-3.5 h-3.5 text-brand-primary flex-shrink-0" />
-                  <span>Active in Yield Forecasting • Foliar Vision Diagnosis coming soon</span>
+                  <span>Yield Forecasting Active • Foliar Vision Diagnosis coming soon</span>
                 </div>
               )}
             </div>
