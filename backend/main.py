@@ -16,11 +16,14 @@ import joblib
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(PROJECT_ROOT))
 try:
-    from gradcam import find_last_conv_layer, make_gradcam_heatmap, overlay_heatmap
-except ImportError:
-    find_last_conv_layer = None
-    make_gradcam_heatmap = None
-    overlay_heatmap = None
+    from backend.gradcam import find_last_conv_layer, make_gradcam_heatmap, overlay_heatmap
+except (ImportError, ValueError):
+    try:
+        from gradcam import find_last_conv_layer, make_gradcam_heatmap, overlay_heatmap
+    except ImportError:
+        find_last_conv_layer = None
+        make_gradcam_heatmap = None
+        overlay_heatmap = None
 
 app = FastAPI(title="BioVision Multimodal Agro-AI Engine", version="2.0")
 
