@@ -43,13 +43,14 @@ pnpm-debug.log*
 frontend/.env.local
 frontend/.env.*.local
 
-# Large Datasets and Archives (Exclude from Git)
+# Large Datasets, Archives and Generated Documents (Exclude from Git)
 datasets/
 data/
 *.zip
 *.tar.gz
 *.rar
 *.7z
+*.pdf
 
 # Retain essential trained models (unignore model files)
 !models/disease_model.keras
